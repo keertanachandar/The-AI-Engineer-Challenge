@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { ChatMessage as ChatMessageType } from '../types';
 import { User, Bot } from 'lucide-react';
 

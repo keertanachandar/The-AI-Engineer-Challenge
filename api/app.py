@@ -12,6 +12,8 @@ from typing import Optional
 # Initialize FastAPI application with a title
 app = FastAPI(title="OpenAI Chat API")
 
+default_model = "gpt-4.1-mini"
+
 # Configure CORS (Cross-Origin Resource Sharing) middleware
 # This allows the API to be accessed from different domains/origins
 app.add_middleware(
@@ -27,7 +29,7 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     developer_message: str  # Message from the developer/system
     user_message: str      # Message from the user
-    model: Optional[str] = "gpt-4.1-mini"  # Optional model selection with default
+    model: Optional[str] = default_model  # Optional model selection with default
     api_key: str          # OpenAI API key for authentication
 
 # Define the main chat endpoint that handles POST requests
@@ -41,7 +43,7 @@ async def chat(request: ChatRequest):
         async def generate():
             # Create a streaming chat completion request
             stream = client.chat.completions.create(
-                model=request.model,
+                model=request.model or default_model,
                 messages=[
                     {"role": "developer", "content": request.developer_message},
                     {"role": "user", "content": request.user_message}
@@ -65,6 +67,11 @@ async def chat(request: ChatRequest):
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok"}
+
+# Vercel requires this for serverless deployment
+@app.get("/")
+async def root():
+    return {"message": "OpenAI Chat API is running!"}
 
 # Entry point for running the application directly
 if __name__ == "__main__":

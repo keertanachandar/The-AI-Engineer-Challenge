@@ -1,6 +1,7 @@
 import { ChatRequest } from './types';
 
-const API_BASE_URL = '/api';
+// Configure API base URL for different environments
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export class ChatAPI {
   static async sendMessage(request: ChatRequest): Promise<ReadableStream<Uint8Array>> {
